@@ -20,10 +20,11 @@ class List:
     def _iter_node(self):
         if not self.is_empty():
             current = self.head.next
-            while current != self.head:
+            while True:
                 yield current
+                if current == self.head:
+                    break
                 current = current.next
-            yield current
 
     def __iter__(self):
         for element in self._iter_node():
@@ -33,10 +34,9 @@ class List:
         if not self.is_empty():
             current = self.head
             while True:
-                if current == self.head.next:
-                    yield current
-                    break
                 yield current
+                if current == self.head.next:
+                    break
                 current = current.previous
 
     def __reversed__(self):
@@ -82,9 +82,13 @@ class List:
             return self._get_node(current).content
 
     def __setitem__(self, current, item):
+        target = self._get_node(current)
+        target.changeContent(item)
+
+    def insert(self, current, item):
         if current == 0:
             self.pushBefore(item)
-        elif current >= len(self) - 1:
+        elif current > len(self) - 1:
             self.pushAfter(item)
         else:
             tmp = Node(item)
@@ -94,7 +98,6 @@ class List:
             tmp.addNext(old_node)
             old_node.previous = tmp
             self.len += 1
-
 
     def pushAfter(self, element):
         tmp = Node(element)
@@ -122,6 +125,8 @@ class List:
             self.len += 1
 
     def pop(self, current=None):
+        if not current is None and not isinstance(current, int):
+            raise Exception("Just interger it's accepted.")
         if self.head is not None:
             if (current is None) or (current >= len(self)-1):
                 tmp = self.head
@@ -129,7 +134,7 @@ class List:
                 tmp = self._get_node(current)
             self._remove(tmp)
             return tmp.content
-        raise Exception("Lenght is 0 and your head is None.")
+        raise Exception("Lenght is 0 and your head is None. List empty.")
 
 
     def _remove(self, node):
@@ -140,6 +145,10 @@ class List:
         self.len -= 1
         if len(self) == 0:
             self.head = None
+
+    def clear(self):
+        self.head = None
+        self.len = 0
 
     def copy(self):
         tmp = List()
@@ -165,3 +174,6 @@ class Node:
 
     def addNext(self, nxt):
         self.next = nxt
+
+    def changeContent(self, element):
+        self.content = element

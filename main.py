@@ -1,14 +1,18 @@
 from List import List
+from Matrix import Matrix
 
 if __name__ == '__main__':
-    l = List()
+    m = Matrix()
+    m.pushAfter(List(0,1))
+    m.pushAfter(List(4,5))
+    m.pushAfter(List(8,9))
 
-    l.pushAfter(1)
+    for i in range(10):
+        for j in range(4, -1, -1):
+            print(i, 4 - j - 1)
 
-    a = List()
-
-    a.pushAfter(2)
-
-    b = l + 1
-
-    print(b)
+    print(m)
+    print(m.reverse())
+    print(m.reverse(""))
+    for element in m.show_elements_per_cordonate():
+        print(element)
