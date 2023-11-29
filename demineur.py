@@ -9,10 +9,9 @@ class Game:
         self.bombs = bombs
 
         self.place_bombs()
+        self.detect_bombs_per_case()
 
         self.board = self.reference_board.copy()
-
-        print(self.reference_board)
 
     def select_cases(self, nbomb):
         selection = List()
@@ -78,7 +77,17 @@ class Game:
     def count_bombs(self, row, column):
         count = 0
         neighbors = self.get_neighbors(row, column)
+        for case in neighbors:
+            if str(case) == "X":
+                count += 1
+        return count
 
+    def detect_bombs_per_case(self):
+        for row in range(len(self.reference_board)):
+            for column in range(len(self.reference_board[row])):
+                bombs_detected = self.count_bombs(row, column)
+                if self.reference_board[row][column] != "X":
+                    self.reference_board[row][column] = bombs_detected
 
     def place_bombs(self):
         selection = self.select_cases(self.bombs)
