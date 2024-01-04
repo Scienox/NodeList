@@ -21,7 +21,7 @@ class Matrix(List):
     def copy(self):
         tmp = Matrix()
         for element in self:
-            tmp.pushAfter(element)
+            tmp.pushAfter(element.copy())
         return tmp
 
     def reverse(self, direction:"vertical, orthogonal"="vertical"):

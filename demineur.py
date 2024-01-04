@@ -7,19 +7,24 @@ class Game:
     def __init__(self, row, column, bombs):
         self.reference_board = Matrix(row, column)
         self.bombs = bombs
+        self.start = False
 
-        self.place_bombs()
-        self.detect_bombs_per_case()
+        #self.place_bombs()
+        #self.detect_bombs_per_case()
 
         self.board = self.reference_board.copy()
+        for row in range(len(self.board)):
+            for column in range(len(self.board[0])):
+                self.board[row][column] = '.'
 
-    def select_cases(self, nbomb):
+    def select_cases(self, nbomb, startCase):
         selection = List()
         tmpCaseAvaible = List()
 
         for row in range(len(self.reference_board)):
             for column in range(len(self.reference_board[row])):
-                tmpCaseAvaible.pushAfter((row, column))
+                if (row, column) != startCase:
+                    tmpCaseAvaible.pushAfter((row, column))
 
         for bomb in range(nbomb):
             fingerDeath = random.randint(0, len(tmpCaseAvaible) - 1)
@@ -89,9 +94,19 @@ class Game:
                 if self.reference_board[row][column] != "X":
                     self.reference_board[row][column] = bombs_detected
 
-    def place_bombs(self):
-        selection = self.select_cases(self.bombs)
+    def place_bombs(self, startCase):
+        selection = self.select_cases(self.bombs, startCase)
         for coordonate in selection:
             row = coordonate[0]
             column = coordonate[1]
             self.reference_board[row][column] = "X"
+
+        self.count_bombs
+
+    def choice_case(self, row, column):
+        if not self.start:
+            self.start = True
+            self.place_bombs((row, column))
+            self.detect_bombs_per_case()
+        
+        self.board[row][column] = self.reference_board[row][column]
