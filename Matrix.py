@@ -18,6 +18,9 @@ class Matrix(List):
             board += "(" + " | ".join(str(element) for element in self[row]) + ")\n"
         return board
 
+    def __repr__(self):
+        return "Matrix: " + self.__str__()
+
     def copy(self):
         tmp = Matrix()
         for element in self:

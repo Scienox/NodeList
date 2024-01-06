@@ -17,6 +17,9 @@ class List:
     def __str__(self):
         return "[" + ", ".join(str(element) for element in self) + "]"
 
+    def __repr__(self):
+        return "List: " + self.__str__()
+
     def _iter_node(self):
         if not self.is_empty():
             current = self.head.next

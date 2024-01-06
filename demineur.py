@@ -7,7 +7,7 @@ class Game:
     def __init__(self, row, column, bombs):
         self.reference_board = Matrix(row, column)
         self.bombs = bombs
-        self.start = False
+        self.is_playing = False
 
         #self.place_bombs()
         #self.detect_bombs_per_case()
@@ -103,10 +103,65 @@ class Game:
 
         self.count_bombs
 
-    def choice_case(self, row, column):
-        if not self.start:
-            self.start = True
+    def foreach(self, matrix):
+        for row in range(len(matrix)):
+            for column in range(len(matrix[0])):
+                yield matrix[row][column]
+
+    def check_loose(self, target):
+        row, column = target
+        if self.board[row][column] == "X":
+            print("You loose!")
+            return True
+        return False
+
+    def safe_cases_discovered(self):
+        safe_cases = 0
+        bombs_founded = 0
+        for row in range(len(self.board)):
+            for column in range(len(self.board[0])):
+                if self.board[row][column] == ("." or "F"):
+                    safe_cases += 1
+                if (self.board[row][column] == "F") and (self.reference_board[row][column] == "X"):
+                    bombs_founded += 1
+                elif (self.board[row][column] == "F") and (self.reference_board[row][column] != "X"):
+                    return 0, 0
+        return safe_cases, bombs_founded
+
+    def check_win(self):
+        safe_cases, bombs_founded = self.safe_cases_discovered()
+        bombs_missed = self.bombs == safe_cases
+        bombs__founded = self.bombs == bombs_founded
+        
+        if bombs__founded or bombs_missed:
+            print("You Win!")
+            return True
+        return False
+
+    def choice_case(self, row, column, action):
+        if not self.is_playing:
+            self.is_playing = True
             self.place_bombs((row, column))
             self.detect_bombs_per_case()
-        
-        self.board[row][column] = self.reference_board[row][column]
+            self.board[row][column] = self.reference_board[row][column]
+        else:
+
+            if action.upper() == "F" and self.board[row][column] == "F":
+                self.board[row][column] = "."
+            elif action.upper() == "F" and self.board[row][column] == ".":
+                self.board[row][column] = "F"
+            else:
+                self.board[row][column] = self.reference_board[row][column]
+
+    def start(self):
+        print(self.board)
+
+        while True:
+            row = int(input("Choice a row: "), )
+            column = int(input("Choice a column: "))
+            action = input("Action: empty=discover, set_falg=f, remove_flag=f:\n-> ")
+            self.choice_case(row, column, action)
+            print(self.board)
+            print(self.reference_board)  # show cheat
+            if self.check_win() or self.check_loose((row, column)):
+                break
