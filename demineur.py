@@ -37,6 +37,14 @@ class Game:
 
     def get_neighbors(self, row, column):
         neighbor_list = List()
+
+        for _row, _column in self.get_neighbors_coordonates(row, column):
+            neighbor_list.pushAfter(self.reference_board[_row][_column])
+
+        return neighbor_list
+
+    def get_neighbors_coordonates(self, row, column):
+        neighbor_list = List()
         """
         top
         topLeft
@@ -51,30 +59,30 @@ class Game:
         column_max = len(self.reference_board) - 1
 
         if row > 0:
-            top = self.reference_board[row-1][column]
+            top = (row-1, column)
             neighbor_list.pushAfter(top)
             if column > 0:
-                topLeft = self.reference_board[row-1][column-1]
+                topLeft = (row-1, column-1)
                 neighbor_list.pushAfter(topLeft)
             if column < column_max:
-                topRight = self.reference_board[row-1][column+1]
+                topRight = (row-1, column+1)
                 neighbor_list.pushAfter(topRight)
 
         if column > 0:
-            left = self.reference_board[row][column-1]
+            left = (row, column-1)
             neighbor_list.pushAfter(left)
         if column < column_max:
-            right = self.reference_board[row][column+1]
+            right = (row, column+1)
             neighbor_list.pushAfter(right)
 
         if row < row_max:
-            bottom = self.reference_board[row+1][column]
+            bottom = (row+1, column)
             neighbor_list.pushAfter(bottom)
             if column > 0:
-                bottomLeft = self.reference_board[row+1][column-1]
+                bottomLeft = (row+1, column-1)
                 neighbor_list.pushAfter(bottomLeft)
             if column < column_max:
-                bottomRight = self.reference_board[row+1][column+1]
+                bottomRight = (row+1, column+1)
                 neighbor_list.pushAfter(bottomRight)
 
         return neighbor_list
@@ -115,7 +123,7 @@ class Game:
             return True
         return False
 
-    def safe_cases_discovered(self):
+    def safe_cases_discovered(self) -> tuple:
         safe_cases = 0
         bombs_founded = 0
         for row in range(len(self.board)):
@@ -143,7 +151,8 @@ class Game:
             self.is_playing = True
             self.place_bombs((row, column))
             self.detect_bombs_per_case()
-            self.board[row][column] = self.reference_board[row][column]
+            #self.board[row][column] = self.reference_board[row][column]
+            self.show(row, column)
         else:
 
             if action.upper() == "F" and self.board[row][column] == "F":
@@ -151,7 +160,31 @@ class Game:
             elif action.upper() == "F" and self.board[row][column] == ".":
                 self.board[row][column] = "F"
             else:
-                self.board[row][column] = self.reference_board[row][column]
+                self.show(row, column)
+
+    def show_recursive(self, neighbors):
+        for row, column in neighbors:
+            coordonate = (row, column)
+            content = self.reference_board[row][column]
+            if isinstance(content, int) and content == 0:
+                neighbors_iter = self.get_neighbors_coordonates(row, column)
+
+                for _row, _column in neighbors_iter:
+                    _coordonate = (_row, _column)
+                    if (_coordonate not in neighbors):
+                        neighbors.pushAfter(_coordonate)
+
+        return neighbors
+
+    def show(self, row, column):
+        content = self.reference_board[row][column]
+        discover = List()
+        discover.pushAfter((row, column))
+        if isinstance(content, int) and (content == 0):
+            discover = self.show_recursive(discover)
+        for _row, _column in discover:
+            self.board[_row][_column] = self.reference_board[_row][_column]
+
 
     def start(self):
         print(self.board)
